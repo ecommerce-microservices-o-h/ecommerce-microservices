@@ -1,7 +1,4 @@
 services:
-  # =============================================================================
-  # 📡 KAFKA BROKER (KRaft mode - NO ZooKeeper)
-  # =============================================================================
   kafka:
     image: apache/kafka:4.2.0
     container_name: kafka
@@ -10,21 +7,17 @@ services:
       - "9092:9092"
 
     environment:
-      # 🧠 REQUIRED FOR KRAFT
-      KAFKA_CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk   # random base64 id (ok for dev)
+      KAFKA_CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
 
-      # KRaft roles
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
 
-      # Listeners
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
 
-      # Dev single node settings
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
