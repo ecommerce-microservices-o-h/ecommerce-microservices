@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  string status  = 1;
+  string message = 2;
+}
