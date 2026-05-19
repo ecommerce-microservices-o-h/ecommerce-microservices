@@ -1,0 +1,49 @@
+:root{
+  --bs-body-bg:#0f1117;
+  --bs-body-color:#e2e8f0;
+}
+
+body{
+  background:#0f1117;
+  color:#e2e8f0;
+  font-family:'Segoe UI',sans-serif;
+}
+
+.sidebar{
+  width:220px;
+  min-height:100vh;
+  background:#161b27;
+  border-right:1px solid #1e293b;
+  position:fixed;
+  top:0;
+  left:0;
+}
+
+.main{
+  margin-left:220px;
+  padding:2rem;
+}
+
+.section{display:none}
+.section.active{display:block}
+
+.card{
+  background:#161b27;
+  border:1px solid #1e293b;
+  border-radius:12px;
+}
+
+.result-box{
+  background:#0a0e1a;
+  border:1px solid #1e293b;
+  border-radius:8px;
+  padding:1rem;
+  font-family:monospace;
+  font-size:.82rem;
+  color:#a5f3fc;
+  max-height:320px;
+  overflow-y:auto;
+}
+
+.spinner-border-sm{display:none}
+.loading .spinner-border-sm{display:inline-block}

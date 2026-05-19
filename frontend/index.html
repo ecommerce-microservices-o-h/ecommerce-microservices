@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>E-Commerce Microservices Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bs-body-bg: #0f1117;
+        --bs-body-color: #e2e8f0;
+      }
+      body {
+        background: #0f1117;
+        color: #e2e8f0;
+        font-family: "Segoe UI", sans-serif;
+      }
+      .sidebar {
+        width: 220px;
+        min-height: 100vh;
+        background: #161b27;
+        border-right: 1px solid #1e293b;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+      }
+      .sidebar .brand {
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid #1e293b;
+      }
+      .sidebar .brand h5 {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        margin: 0;
+      }
+      .sidebar .nav-link {
+        color: #94a3b8;
+        border-radius: 8px;
+        margin: 2px 8px;
+        padding: 0.6rem 1rem;
+        transition: all 0.2s;
+      }
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background: #6366f120;
+        color: #a5b4fc;
+      }
+      .sidebar .nav-link i {
+        margin-right: 0.5rem;
+      }
+      .main {
+        margin-left: 220px;
+        padding: 2rem;
+      }
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+      .card {
+        background: #161b27;
+        border: 1px solid #1e293b;
+        border-radius: 12px;
+      }
+      .card-header {
+        background: #1e293b;
+        border-radius: 12px 12px 0 0 !important;
+        border-bottom: 1px solid #2d3748;
+      }
+      .form-control,
+      .form-select {
+        background: #0f1117;
+        border: 1px solid #2d3748;
+        color: #e2e8f0;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        background: #0f1117;
+        border-color: #6366f1;
+        color: #e2e8f0;
+        box-shadow: 0 0 0 0.2rem #6366f130;
+      }
+      .form-label {
+        color: #94a3b8;
+        font-size: 0.85rem;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border: none;
+      }
+      .btn-outline-info {
+        color: #38bdf8;
+        border-color: #38bdf8;
+      }
+      .btn-outline-info:hover {
+        background: #38bdf820;
+        color: #38bdf8;
+      }
+      .result-box {
+        background: #0a0e1a;
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: #a5f3fc;
+        max-height: 320px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .badge-phone {
+        background: #7c3aed20;
+        color: #c4b5fd;
+        border: 1px solid #7c3aed40;
+      }
+      .badge-pc {
+        background: #0369a120;
+        color: #7dd3fc;
+        border: 1px solid #0369a140;
+      }
+      .table {
+        color: #e2e8f0;
+      }
+      .table th {
+        color: #94a3b8;
+        border-color: #1e293b;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+      .table td {
+        border-color: #1e293b;
+      }
+      .status-ok {
+        color: #4ade80;
+      }
+      .status-err {
+        color: #f87171;
+      }
+      .graphql-btn {
+        background: #e10098;
+        border: none;
+        color: #fff;
+      }
+      .graphql-btn:hover {
+        background: #c40080;
+        color: #fff;
+      }
+      .spinner-border-sm {
+        display: none;
+      }
+      .loading .spinner-border-sm {
+        display: inline-block;
+      }
+      textarea.form-control {
+        resize: vertical;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="brand">
+        <h5><i class="bi bi-cpu"></i> MicroStore</h5>
+        <small class="text-secondary" style="font-size: 0.72rem"
+          >API Gateway :3000</small
+        >
+      </div>
+      <nav class="nav flex-column mt-2">
+        <a class="nav-link active" onclick="show('users')"
+          ><i class="bi bi-people"></i>Users</a
+        >
+        <a class="nav-link" onclick="show('products')"
+          ><i class="bi bi-box-seam"></i>Products</a
+        >
+        <a class="nav-link" onclick="show('orders')"
+          ><i class="bi bi-cart3"></i>Orders</a
+        >
+        <a class="nav-link" onclick="show('graphql')"
+          ><i class="bi bi-braces"></i>GraphQL</a
+        >
+        <a class="nav-link" onclick="show('health')"
+          ><i class="bi bi-heart-pulse"></i>Health</a
+        >
+      </nav>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <!-- ── USERS ── -->
+      <div id="sec-users" class="section active">
+        <h4 class="mb-4">
+          <i class="bi bi-people text-primary"></i> User Service
+        </h4>
+        <div class="row g-4">
+          <!-- Create User -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <i class="bi bi-person-plus"></i> Create User
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">Name</label>
+                  <input id="u-name" class="form-control" placeholder="Alice" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input
+                    id="u-email"
+                    class="form-control"
+                    placeholder="alice@example.com"
+                  />
+                </div>
+                <button class="btn btn-primary w-100" onclick="createUser()">
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-cu"
+                  ></span
+                  >Create User
+                </button>
+                <div class="result-box mt-3" id="res-cu">—</div>
+              </div>
+            </div>
+          </div>
+          <!-- Get User -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <i class="bi bi-person-lines-fill"></i> Get User
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">User ID</label>
+                  <input
+                    id="u-id"
+                    class="form-control"
+                    placeholder="paste user id…"
+                  />
+                </div>
+                <button class="btn btn-outline-info w-100" onclick="getUser()">
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-gu"
+                  ></span
+                  >Fetch User
+                </button>
+                <div class="result-box mt-3" id="res-gu">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PRODUCTS ── -->
+      <div id="sec-products" class="section">
+        <h4 class="mb-4">
+          <i class="bi bi-box-seam text-success"></i> Product Service
+        </h4>
+        <div class="row g-4">
+          <!-- Add Product -->
+          <div class="col-md-5">
+            <div class="card">
+              <div class="card-header">
+                <i class="bi bi-plus-circle"></i> Add Product
+              </div>
+              <div class="card-body">
+                <div class="mb-2">
+                  <label class="form-label">Name</label>
+                  <input
+                    id="p-name"
+                    class="form-control"
+                    placeholder="iPhone 15"
+                  />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Category</label>
+                  <select id="p-cat" class="form-select">
+                    <option value="phone">phone</option>
+                    <option value="pc">pc</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Price (€)</label>
+                  <input
+                    id="p-price"
+                    class="form-control"
+                    type="number"
+                    placeholder="999.99"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Stock</label>
+                  <input
+                    id="p-stock"
+                    class="form-control"
+                    type="number"
+                    placeholder="50"
+                  />
+                </div>
+                <button class="btn btn-primary w-100" onclick="addProduct()">
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-ap"
+                  ></span
+                  >Add Product
+                </button>
+                <div class="result-box mt-3" id="res-ap">—</div>
+              </div>
+            </div>
+          </div>
+          <!-- List / Get -->
+          <div class="col-md-7">
+            <div class="card mb-3">
+              <div class="card-header">
+                <i class="bi bi-list-ul"></i> All Products
+              </div>
+              <div class="card-body">
+                <button
+                  class="btn btn-outline-info w-100"
+                  onclick="listProducts()"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-lp"
+                  ></span
+                  >Load Products
+                </button>
+                <div class="table-responsive mt-3">
+                  <table class="table table-sm" id="tbl-products">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Cat</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>ID</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-products">
+                      <tr>
+                        <td colspan="5" class="text-center text-secondary">
+                          —
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <i class="bi bi-search"></i> Get Product by ID
+              </div>
+              <div class="card-body">
+                <div class="input-group">
+                  <input
+                    id="p-id"
+                    class="form-control"
+                    placeholder="product id…"
+                  />
+                  <button class="btn btn-outline-info" onclick="getProduct()">
+                    Fetch
+                  </button>
+                </div>
+                <div class="result-box mt-3" id="res-gp">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ORDERS ── -->
+      <div id="sec-orders" class="section">
+        <h4 class="mb-4">
+          <i class="bi bi-cart3 text-warning"></i> Order Service
+        </h4>
+        <div class="row g-4">
+          <!-- Create Order -->
+          <div class="col-md-5">
+            <div class="card">
+              <div class="card-header">
+                <i class="bi bi-plus-circle"></i> Create Order
+              </div>
+              <div class="card-body">
+                <div class="mb-2">
+                  <label class="form-label">User ID</label>
+                  <input
+                    id="o-uid"
+                    class="form-control"
+                    placeholder="user id"
+                  />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Product ID</label>
+                  <input
+                    id="o-pid"
+                    class="form-control"
+                    placeholder="product id"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Quantity</label>
+                  <input
+                    id="o-qty"
+                    class="form-control"
+                    type="number"
+                    value="1"
+                  />
+                </div>
+                <button class="btn btn-primary w-100" onclick="createOrder()">
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-co"
+                  ></span
+                  >Place Order
+                </button>
+                <div class="result-box mt-3" id="res-co">—</div>
+                <div
+                  class="alert alert-info mt-3 p-2"
+                  style="font-size: 0.78rem"
+                >
+                  <i class="bi bi-info-circle"></i> Placing an order triggers a
+                  Kafka event → stock decreases & email notification is logged.
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- List Orders -->
+          <div class="col-md-7">
+            <div class="card">
+              <div class="card-header">
+                <i class="bi bi-list-ul"></i> All Orders
+              </div>
+              <div class="card-body">
+                <button
+                  class="btn btn-outline-info w-100"
+                  onclick="listOrders()"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-lo"
+                  ></span
+                  >Load Orders
+                </button>
+                <div class="table-responsive mt-3">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-orders">
+                      <tr>
+                        <td colspan="5" class="text-center text-secondary">
+                          —
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GRAPHQL ── -->
+      <div id="sec-graphql" class="section">
+        <h4 class="mb-4">
+          <i class="bi bi-braces" style="color: #e10098"></i> GraphQL Explorer
+        </h4>
+        <div class="row g-4">
+          <div class="col-md-5">
+            <div class="card h-100">
+              <div class="card-header">Query</div>
+              <div class="card-body d-flex flex-column">
+                <div class="mb-2">
+                  <label class="form-label">Preset Queries</label>
+                  <select
+                    class="form-select mb-2"
+                    onchange="setPreset(this.value)"
+                  >
+                    <option value="">— choose —</option>
+                    <option value="products">All Products</option>
+                    <option value="orders">All Orders</option>
+                    <option value="user">User by ID</option>
+                    <option value="product">Product by ID</option>
+                  </select>
+                </div>
+                <label class="form-label">Query</label>
+                <textarea
+                  id="gql-query"
+                  class="form-control flex-grow-1"
+                  rows="8"
+                  style="min-height: 180px"
+                >
+{ products { id name category price stock } }</textarea
+                >
+                <button
+                  class="btn graphql-btn mt-3 w-100"
+                  onclick="runGraphQL()"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    id="spin-gql"
+                  ></span
+                  ><i class="bi bi-play-fill"></i> Run Query
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="card h-100">
+              <div class="card-header">Response</div>
+              <div class="card-body">
+                <div class="result-box" id="res-gql" style="min-height: 300px">
+                  —
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HEALTH ── -->
+      <div id="sec-health" class="section">
+        <h4 class="mb-4">
+          <i class="bi bi-heart-pulse text-danger"></i> Health Check
+        </h4>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-bell"></i> Notification Service Health
+            </div>
+            <div class="card-body">
+              <p class="text-secondary" style="font-size: 0.85rem">
+                Calls <code>GET /health/notification</code> → gRPC
+                <code>HealthCheck</code>
+              </p>
+              <button class="btn btn-primary" onclick="checkHealth()">
+                <span
+                  class="spinner-border spinner-border-sm me-1"
+                  id="spin-hc"
+                ></span
+                ><i class="bi bi-activity"></i> Check Health
+              </button>
+              <div class="result-box mt-3" id="res-hc">—</div>
+              <div id="health-badge" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /main -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const API = "http://localhost:3000";
+
+      //Navigation
+      function show(name) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".sidebar .nav-link")
+          .forEach((l) => l.classList.remove("active"));
+        document.getElementById("sec-" + name).classList.add("active");
+        event.currentTarget.classList.add("active");
+      }
+
+      //Helpers
+      function pretty(obj) {
+        return JSON.stringify(obj, null, 2);
+      }
+      function setRes(id, data) {
+        document.getElementById(id).textContent =
+          typeof data === "string" ? data : pretty(data);
+      }
+      function spin(id, on) {
+        document
+          .getElementById(id)
+          .parentElement.classList[on ? "add" : "remove"]("loading");
+      }
+      function trunc(s, n = 12) {
+        return s ? s.substring(0, n) + "…" : "-";
+      }
+
+      async function api(method, path, body) {
+        const opts = {
+          method,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body) opts.body = JSON.stringify(body);
+        const r = await fetch(API + path, opts);
+        return r.json();
+      }
+
+      //USERS
+      async function createUser() {
+        const name = document.getElementById("u-name").value.trim();
+        const email = document.getElementById("u-email").value.trim();
+        if (!name || !email) {
+          setRes("res-cu", "⚠ Fill in name and email");
+          return;
+        }
+        spin("spin-cu", true);
+        try {
+          setRes("res-cu", await api("POST", "/users", { name, email }));
+        } catch (e) {
+          setRes("res-cu", "Error: " + e.message);
+        }
+        spin("spin-cu", false);
+      }
+
+      async function getUser() {
+        const id = document.getElementById("u-id").value.trim();
+        if (!id) {
+          setRes("res-gu", "⚠ Enter a user ID");
+          return;
+        }
+        spin("spin-gu", true);
+        try {
+          setRes("res-gu", await api("GET", "/users/" + id));
+        } catch (e) {
+          setRes("res-gu", "Error: " + e.message);
+        }
+        spin("spin-gu", false);
+      }
+
+      //PRODUCTS
+      async function addProduct() {
+        const name = document.getElementById("p-name").value.trim();
+        const category = document.getElementById("p-cat").value;
+        const price = parseFloat(document.getElementById("p-price").value);
+        const stock = parseInt(document.getElementById("p-stock").value);
+        if (!name || isNaN(price) || isNaN(stock)) {
+          setRes("res-ap", "⚠ Fill all fields");
+          return;
+        }
+        spin("spin-ap", true);
+        try {
+          setRes(
+            "res-ap",
+            await api("POST", "/products", { name, category, price, stock }),
+          );
+        } catch (e) {
+          setRes("res-ap", "Error: " + e.message);
+        }
+        spin("spin-ap", false);
+      }
+
+      async function listProducts() {
+        spin("spin-lp", true);
+        try {
+          const rows = await api("GET", "/products");
+          const tbody = document.getElementById("tbody-products");
+          if (!rows.length) {
+            tbody.innerHTML =
+              '<tr><td colspan="5" class="text-center text-secondary">No products yet</td></tr>';
+            return;
+          }
+          tbody.innerHTML = rows
+            .map(
+              (p) => `
+      <tr>
+        <td>${p.name}</td>
+        <td><span class="badge ${p.category === "phone" ? "badge-phone" : "badge-pc"}">${p.category}</span></td>
+        <td>€${p.price}</td>
+        <td>${p.stock}</td>
+        <td><small class="text-secondary" title="${p.id}">${trunc(p.id)}</small></td>
+      </tr>`,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("tbody-products").innerHTML =
+            '<tr><td colspan="5">Error: ' + e.message + "</td></tr>";
+        }
+        spin("spin-lp", false);
+      }
+
+      async function getProduct() {
+        const id = document.getElementById("p-id").value.trim();
+        if (!id) {
+          setRes("res-gp", "⚠ Enter a product ID");
+          return;
+        }
+        try {
+          setRes("res-gp", await api("GET", "/products/" + id));
+        } catch (e) {
+          setRes("res-gp", "Error: " + e.message);
+        }
+      }
+
+      //ORDERS
+      async function createOrder() {
+        const userId = document.getElementById("o-uid").value.trim();
+        const productId = document.getElementById("o-pid").value.trim();
+        const quantity = parseInt(document.getElementById("o-qty").value);
+        if (!userId || !productId || isNaN(quantity)) {
+          setRes("res-co", "⚠ Fill all fields");
+          return;
+        }
+        spin("spin-co", true);
+        try {
+          setRes(
+            "res-co",
+            await api("POST", "/orders", { userId, productId, quantity }),
+          );
+        } catch (e) {
+          setRes("res-co", "Error: " + e.message);
+        }
+        spin("spin-co", false);
+      }
+
+      async function listOrders() {
+        spin("spin-lo", true);
+        try {
+          const rows = await api("GET", "/orders");
+          const tbody = document.getElementById("tbody-orders");
+          if (!rows.length) {
+            tbody.innerHTML =
+              '<tr><td colspan="5" class="text-center text-secondary">No orders yet</td></tr>';
+            return;
+          }
+          tbody.innerHTML = rows
+            .map(
+              (o) => `
+      <tr>
+        <td><small title="${o.id}">${trunc(o.id)}</small></td>
+        <td><small title="${o.userId}">${trunc(o.userId)}</small></td>
+        <td><small title="${o.productId}">${trunc(o.productId)}</small></td>
+        <td>${o.quantity}</td>
+        <td><span class="badge bg-warning text-dark">${o.status}</span></td>
+      </tr>`,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("tbody-orders").innerHTML =
+            '<tr><td colspan="5">Error: ' + e.message + "</td></tr>";
+        }
+        spin("spin-lo", false);
+      }
+
+      //GRAPHQL
+      const PRESETS = {
+        products:
+          "{\n  products {\n    id\n    name\n    category\n    price\n    stock\n  }\n}",
+        orders:
+          "{\n  orders {\n    id\n    userId\n    productId\n    quantity\n    status\n  }\n}",
+        user: '{\n  user(id: "REPLACE_WITH_USER_ID") {\n    id\n    name\n    email\n  }\n}',
+        product:
+          '{\n  product(id: "REPLACE_WITH_PRODUCT_ID") {\n    id\n    name\n    category\n    price\n    stock\n  }\n}',
+      };
+
+      function setPreset(k) {
+        if (k) document.getElementById("gql-query").value = PRESETS[k];
+      }
+
+      async function runGraphQL() {
+        const query = document.getElementById("gql-query").value.trim();
+        if (!query) {
+          setRes("res-gql", "⚠ Enter a query");
+          return;
+        }
+        spin("spin-gql", true);
+        try {
+          const r = await fetch(API + "/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+          setRes("res-gql", await r.json());
+        } catch (e) {
+          setRes("res-gql", "Error: " + e.message);
+        }
+        spin("spin-gql", false);
+      }
+
+      //HEALTH
+      async function checkHealth() {
+        spin("spin-hc", true);
+        try {
+          const data = await api("GET", "/health/notification");
+          setRes("res-hc", data);
+          const badge = document.getElementById("health-badge");
+          if (data.status === "OK") {
+            badge.innerHTML =
+              '<span class="badge bg-success fs-6"><i class="bi bi-check-circle"></i> ' +
+              data.status +
+              '</span> <span class="text-secondary">' +
+              data.message +
+              "</span>";
+          } else {
+            badge.innerHTML =
+              '<span class="badge bg-danger fs-6">' + data.status + "</span>";
+          }
+        } catch (e) {
+          setRes("res-hc", "Error: " + e.message);
+        }
+        spin("spin-hc", false);
+      }
+    </script>
+  </body>
+</html>
